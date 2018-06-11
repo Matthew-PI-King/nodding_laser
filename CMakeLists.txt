@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(nodding_laser)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   laser_geometry
   roscpp
   std_msgs
-  dynamixel_msgs
+  #dynamixel_msgs
   tf
   dynamixel_workbench_msgs
   angles
@@ -142,6 +142,10 @@ include_directories(
 
  add_executable(nodding_driver_node src/nodding_driver_node.cpp)
  target_link_libraries(nodding_driver_node ${catkin_LIBRARIES})
+
+ add_executable(nodding_manager_node src/nodding_manager_node.cpp)
+ target_link_libraries(nodding_manager_node ${catkin_LIBRARIES})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use

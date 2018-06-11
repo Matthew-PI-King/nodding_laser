@@ -18,7 +18,7 @@ void obtainValues(const dynamixel_workbench_msgs::DynamixelStateList &msg)
 {
     //gets position from message
     int pos = msg.dynamixel_state[0].present_position;
-	double angle = 0.29*(pos-512);
+    double angle = 0.29*(pos-512);
     angle = angles::from_degrees(angle);
     //perform transform
     static tf::TransformBroadcaster br;
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
   
     //subscirber to current position
-    ros::Subscriber position_sub = nh.subscribe("/dynamixel_state", 5, &obtainValues);
+    ros::Subscriber position_sub = nh.subscribe("/dynamixel_state", 10, &obtainValues);
 
     //wait for updates in position
     ros::spin();
