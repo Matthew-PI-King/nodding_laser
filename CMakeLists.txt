@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(nodding_laser)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-#add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -121,7 +121,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-include
+# include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -138,18 +138,15 @@ include
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
- 
-
-
  add_executable(transform_manager_node src/transform_manager.cpp)
  target_link_libraries(transform_manager_node ${catkin_LIBRARIES})
 
  add_executable(nodding_driver_node src/nodding_driver_node.cpp)
  target_link_libraries(nodding_driver_node ${catkin_LIBRARIES})
- 
- ##add_executable(custom_controller_node src/custom_controller_node.cpp)
- ##target_link_libraries(custom_controller_node ${catkin_LIBRARIES})
- 
+
+ add_executable(nodding_manager_node src/nodding_manager_node.cpp)
+ target_link_libraries(nodding_manager_node ${catkin_LIBRARIES})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
