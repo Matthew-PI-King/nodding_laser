@@ -11,24 +11,53 @@
 
 
 nodding_manager::nodding_manager(ros::NodeHandle n, int stepsize)
-:myNodeHandler(n),stepSize(stepsize), error(999)
+:myNodeHandler(n),stepSize(stepsize), error(999), position(512)
 {
   this->myClient = myNodeHandler.serviceClient<dynamixel_workbench_msgs::JointCommand>("joint_command");
-  //Initialize location to horizontal position.
-  this->sendJointCommand(); 
- 
-  while(this->error > 2)
+  
+  myDynamixel->begin(device_name.c_str(), dxl_baud_rate);
+   
+  if (!myDynamixel->scan(dxl_id_, &dxl_cnt_, scan_range))
   {
+    ROS_ERROR("Not found Motors, Please check scan range or baud rate");
+    ros::shutdown();
+  }
+  myDynamixel->addSyncWrite("Goal_Position");
+  //Initlialize location to horizontal position.
+  //this->sendJointCommand(); 
+  //std::cout<<"STARTING!"<<std::endl;
+ // sleep(1);
+  //ros::spinOnce();
+  /*while(std::abs(this->error) > 2 and ros::ok())
+  {
+	sleep(1);
+    //ros::spinOnce();
+	std::cout<<"Error Margin: "<<this->error<<". Waiting..."<<std::endl;
     //std::this_thread::sleep_for(std::chrono::milliseconds(200)); //wait for intitial horizontal position.
   }
+  */
+  std::cout<<"Reseting Position!"<<std::endl;
+  sleep(5);
 
+  /*dynamixel_workbench_msgs::JointCommand srv;
+  srv.request.unit = "raw"; //raw position encoding, as opposed to an angle.
+  srv.request.id =1;  //Servo ID=1. 
+  srv.request.goal_position = 512;
+  while(!myClient.call(srv))
+  {
+  std::cout<<"Connecting..."<<std::endl;
+  }   
+  sleep(5);
+   */   
+
+  std::cout<<"Startup Complete!"<<std::endl;
 };
 
 //Recieves the state of the dynamixel.
-void nodding_manager::recieveDynamixelState(dynamixel_workbench_msgs::DynamixelStateList &msg)
+void nodding_manager::recieveDynamixelState(int pos)
 {  
 
-  int pos = msg.dynamixel_state[0].present_position; //array would have multiple elements if there were multiple servos in use at one time.
+  //.int pos = msg.dynamixel_state[0].present_position; //array would have multiple elements if there were multiple servos in use at one time.
   
   if(this->cw_CCWb) //ensure that a positive error always indicates a lag.
   {
@@ -38,6 +67,10 @@ void nodding_manager::recieveDynamixelState(dynamixel_workbench_msgs::DynamixelS
   {
     this->error=pos-this->position;
   }
+  if(std::abs(this->error > 2))
+  {
+  std::cout<<"Compliance Error:"<<this->error<<std::endl;
+  }
 
 
   return;
@@ -45,20 +78,21 @@ void nodding_manager::recieveDynamixelState(dynamixel_workbench_msgs::DynamixelS
 
 bool nodding_manager::loop()
 {
+  //ros::spinOnce();
   this->updateTF();
   this->updatePosition();
+  this->writePosition();
 
-  if(std::abs(this->error > 2))
-  {
-  std::cout<<"Error:"<<this->error<<std::endl;
-  }
-
+  //this->sendJointCommand();
+  
   return true;
 };
 
 //Update the the TF based on the current (estimated) position.
 void nodding_manager::updateTF()
 {
+  //int pos=this->position;
+  int pos = myDynamixel->itemRead(1, "Present_Position");
   double angle = 0.29*(this->position-512);  //512 is the horizontal offset. Resolution is 0.29 degrees.
   angle = angles::from_degrees(angle); //convert to radians.
 
@@ -68,6 +102,8 @@ void nodding_manager::updateTF()
   q.setRPY(0, angle, 0);
   transform.setRotation(q);
   this->myBroadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "servo", "laser"));
+
+  //this->recieveDynamixelState(pos); //check error margin (Not required).
 
   return;
 };
@@ -99,6 +135,10 @@ void nodding_manager::updatePosition()
       this->cw_CCWb= true;
     }
   } 
+  //if(!this->sendJointCommand())
+  //{
+  //  printf("Failed to send command!\n");
+  //}
 }
 
 //Call the position controller.
@@ -112,4 +152,10 @@ bool nodding_manager::sendJointCommand()
 
 }
 
+void nodding_manager::writePosition()
+{
+
+myDynamixel->syncWrite("Goal_Position", &this->position);
+
+}
 
