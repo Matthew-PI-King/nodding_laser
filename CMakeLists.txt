@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   laser_geometry
   roscpp
   std_msgs
-  #dynamixel_msgs
+  sensor_msgs
   tf
   dynamixel_workbench_msgs
   angles
@@ -138,14 +138,17 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
- add_executable(transform_manager_node src/transform_manager.cpp)
- target_link_libraries(transform_manager_node ${catkin_LIBRARIES})
+# add_executable(transform_manager_node src/transform_manager.cpp)
+# target_link_libraries(transform_manager_node ${catkin_LIBRARIES})
 
- add_executable(nodding_driver_node src/nodding_driver_node.cpp)
- target_link_libraries(nodding_driver_node ${catkin_LIBRARIES})
+# add_executable(nodding_driver_node src/nodding_driver_node.cpp)
+# target_link_libraries(nodding_driver_node ${catkin_LIBRARIES})
 
  add_executable(nodding_manager_node src/nodding_manager_node.cpp)
  target_link_libraries(nodding_manager_node ${catkin_LIBRARIES})
+
+ add_executable(scan_converter_node src/scan_converter_node.cpp)
+ target_link_libraries(scan_converter_node ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

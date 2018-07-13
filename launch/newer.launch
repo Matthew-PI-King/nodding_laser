@@ -1,0 +1,26 @@
+<launch>
+ <arg name="speed" default="100" />
+ <arg name="min_position" default="374" />
+ <arg name="max_position" default="649" />
+
+ <node name="urg_node" pkg="urg_node" type="urg_node" required="true" output="screen">
+ 	<param name="ip_address" value="192.168.0.10"/>
+ 	<param name="ip_port" value="10940" />
+ </node> 
+
+ <node name="nodding_manager_node" pkg="nodding_laser" type="nodding_manager_node" required="true" output="screen">
+	<param name="goal_speed" type="int" value="$(arg speed)" />
+    <param name="min_position" type="int" value="$(arg min_position)" />
+	<param name="max_position" type="int" value="$(arg max_position)" />
+ </node> 
+
+ <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+	<rosparam command="load" file="$(find nodding_laser)/my_laser_config.yaml" />
+
+ </node>
+
+ <node name="scan_converter_node" pkg="nodding_laser" type="scan_converter_node" required="true" output="screen">
+	<remap from="scan" to="scan_filtered" />
+	<remap from="pointcloud" to="sync_scan_cloud_filtered" />
+ </node>
+ </launch>

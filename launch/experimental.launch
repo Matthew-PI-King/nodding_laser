@@ -1,5 +1,5 @@
 <launch>
- <arg name="device_name"                default="/dev/ttyACM0"/>
+ <arg name="device_name"                default="/dev/ttyUSB0"/>
  <arg name="baud_rate"                  default="1000000"/>
 
  <arg name="scan_range"                 default="10"/>
@@ -18,7 +18,7 @@
  <node name="position_control" pkg="dynamixel_workbench_controllers" type="position_control" required="true" output="screen"/>
 
  <node name="urg_node" pkg="urg_node" type="urg_node" required="true" output="screen">
- 	<param name="ip_address" value="192.168.0.11"/>
+ 	<param name="ip_address" value="192.168.0.10"/>
  	<param name="ip_port" value="10940" />
  </node> 
 

@@ -15,11 +15,8 @@
 class nodding_manager
 {
 public:
-nodding_manager(ros::NodeHandle n, int stepsize = 2); //to try - 4, 11.
+nodding_manager(ros::NodeHandle n); //to try - 4, 11.
 //~nodding_manager();
-
-//recieve data corresponding to the current state of the Dynamixel as self-reported. Insufficient frequency for TF data to be soley based upon.
-void recieveDynamixelState(int pos);
 
 /*
 *Loop calls the other private functions. Returns true unless something has gone wrong.
@@ -28,28 +25,19 @@ bool loop();
 
 private:
 //Functions
-
-//Publishes the transform corresponding to the latest update.
+void readPosition();
 void updateTF();
-
-//Calls the service of the position controller in order to move the servo.
-void updatePosition();
-
-//sends to command to the position controller
-bool sendJointCommand();
+bool updatePosition();
 
 //Variables
 ros::NodeHandle myNodeHandler;
 tf::TransformBroadcaster myBroadcaster;
-ros::ServiceClient myClient;
 
-int error; //difference between current position and goal position.
 
-const int minPosition = 378; //40 degrees from vertical = 378
-const int maxPosition = 649; //-40 degrees from vertical = 649
+int minPosition; //40 degrees from vertical = 378
+int maxPosition; //-40 degrees from vertical = 649
 
-int position;	//We want to intialize to a horizontal position.
-int stepSize;
+int position;
 
 bool cw_CCWb=true; //clockwise or (not) counterclockwise. Clockwise herein defined to be increasing numerical value.
 
@@ -63,13 +51,11 @@ bool cw_CCWb=true; //clockwise or (not) counterclockwise. Clockwise herein defin
   uint32_t profile_velocity     =  200;
   uint32_t profile_acceleration =  50;
 
-  DynamixelWorkbench *myDynamixel = new DynamixelWorkbench;
+  DynamixelWorkbench myDynamixel; //*=new DynamixelWorkbench;
  
   uint8_t dxl_cnt_;
   uint8_t dxl_id_[12];
   
-void writePosition();
- 
-  
+
 
 };
