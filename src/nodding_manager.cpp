@@ -133,7 +133,7 @@ void nodding_manager::updateTF()
   tf::Quaternion q;
   q.setRPY(0, angle, 0);
   transform.setRotation(q);
-  myBroadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "camera", "laser"));
+  myBroadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "laser_link", "laser"));
 
   return;
 };

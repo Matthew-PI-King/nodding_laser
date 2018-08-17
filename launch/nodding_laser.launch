@@ -2,6 +2,7 @@
  <arg name="speed" default="100" />
  <arg name="min_position" default="374" />
  <arg name="max_position" default="649" />
+ <arg name="target_frame" default="laser_link" />
 
  <node name="urg_node" pkg="urg_node" type="urg_node" required="true" output="screen">
  	<param name="ip_address" value="192.168.0.10"/>
@@ -10,7 +11,7 @@
 
  <node name="nodding_manager_node" pkg="nodding_laser" type="nodding_manager_node" required="true" output="screen">
 	<param name="goal_speed" type="int" value="$(arg speed)" />
-    <param name="min_position" type="int" value="$(arg min_position)" />
+        <param name="min_position" type="int" value="$(arg min_position)" />
 	<param name="max_position" type="int" value="$(arg max_position)" />
  </node> 
 
@@ -20,6 +21,7 @@
  </node>
 
  <node name="scan_converter_node" pkg="nodding_laser" type="scan_converter_node" required="true" output="screen">
+        <param name="target_frame" type="string" value="$(arg target_frame)" />
 	<remap from="scan" to="scan_filtered" />
 	<remap from="pointcloud" to="sync_scan_cloud_filtered" />
  </node>

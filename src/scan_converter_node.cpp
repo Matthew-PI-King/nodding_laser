@@ -19,17 +19,20 @@ class mycloud_converter{
 	:nh(), tf_listener(), projector()
 	{
 	sub= nh.subscribe("scan", 5, &mycloud_converter::callback, this);
-	pub= nh.advertise<sensor_msgs::PointCloud2>("pointcloud", 50);
+	pub= nh.advertise<sensor_msgs::PointCloud2>("pointcloud", 400);
+
+	nh.param<std::string>(("/scan_converter_node/target_frame"), destination_frame, "laser_link"); //get the target frame!
+
 	std::cout<<"Converter Initialized!"<<std::endl;
 	};
 
 	void callback(const sensor_msgs::LaserScan::ConstPtr &scan)
 	{
-	if(!tf_listener.waitForTransform(scan->header.frame_id, "camera", scan->header.stamp + ros::Duration().fromSec(scan->ranges.size()*scan->time_increment), ros::Duration(0.1)))
+	if(!tf_listener.waitForTransform(scan->header.frame_id, destination_frame, scan->header.stamp + ros::Duration().fromSec(scan->ranges.size()*scan->time_increment), ros::Duration(0.1)))
 		return;
 
 	sensor_msgs::PointCloud2 cloud;
-	projector.transformLaserScanToPointCloud("camera", *scan, cloud, tf_listener);
+	projector.transformLaserScanToPointCloud(destination_frame, *scan, cloud, tf_listener);
 
 	pub.publish(cloud);
 
@@ -42,6 +45,7 @@ class mycloud_converter{
 	laser_geometry::LaserProjection projector;
 	ros::Subscriber sub;
 	ros::Publisher pub;
+	std::string destination_frame;
 
 };
 
